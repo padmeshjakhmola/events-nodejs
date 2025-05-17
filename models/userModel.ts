@@ -40,3 +40,22 @@ export async function createUser(user: User) {
   const result = await pool.query(query, values);
   return result.rows[0];
 }
+
+export async function signInUser(email: string, password: string): Promise<User | null | "invalid_password"> {
+  const result = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+
+  if (result.rows.length === 0) {
+    return null; 
+  }
+
+  const user = result.rows[0];
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    return "invalid_password";
+  }
+
+// avoiding_memory_leaks
+  delete user.password;
+  return user;
+}

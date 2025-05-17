@@ -12,6 +12,11 @@ const userSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+const loginSchema = z.object({
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
 export const registerUser = async (
   req: Request,
   res: Response
@@ -38,6 +43,36 @@ export const registerUser = async (
       return res.status(400).json({ errors: error.errors });
     }
     console.error("error_registering_user", error);
+    res.status(500).json({ message: "internal_server_error" });
+  }
+};
+
+export const loginUser = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const parsed = loginSchema.parse(req.body);
+
+    const user = await UserModel.signInUser(parsed.email, parsed.password);
+
+    if (!user) {
+      return res.status(404).json({ message: "user_not_found" });
+    }
+
+    if (user === "invalid_password") {
+      return res.status(401).json({ message: "invalid_password" });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, fullName: user.fullname },
+      JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    res.status(200).json({ user, token });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ errors: error.errors });
+    }
+    console.error("error_logging_in_user", error);
     res.status(500).json({ message: "internal_server_error" });
   }
 };
