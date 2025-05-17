@@ -7,7 +7,7 @@ import { authenticateToken } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
-router.get("/", authenticateToken, EventController.getEvents);
+router.get("/", EventController.getEvents);
 router.post("/create", EventController.createEvent);
 
 router.post("/:eventId/attend", AttendEvent.attendEvent);
