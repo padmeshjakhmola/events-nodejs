@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import * as UserModel from "../models/userModel.js";
 import * as EventModel from "../models/eventModel.js";
 import z from "zod";
 
@@ -24,7 +25,25 @@ export async function getEvents(req: Request, res: Response) {
 export async function createEvent(req: Request, res: Response): Promise<any> {
   try {
     const parsed = eventSchema.parse(req.body);
-    const event = await EventModel.createEvent(parsed);
+
+    let ownerId: string | null = null;
+
+    if (parsed.owner_email) {
+      const user = await UserModel.getUserByEmail(parsed.owner_email);
+      if (!user) {
+        return res.status(404).json({ message: "user_not_exists" });
+      }
+      ownerId = user.id!;
+    }
+
+    const event = await EventModel.createEvent({
+      name: parsed.name,
+      description: parsed.description,
+      date: parsed.date,
+      location: parsed.location,
+      owner: ownerId!,
+    });
+
     res.status(201).json(event);
   } catch (error) {
     if (error instanceof z.ZodError) {

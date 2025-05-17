@@ -6,7 +6,7 @@ export interface Event {
   description?: string;
   date: string;
   location?: string;
-  owner_email?: string;
+  owner?: string;
 }
 
 export async function getAllEvents() {
@@ -17,16 +17,16 @@ export async function getAllEvents() {
 }
 
 export async function createEvent(event: Omit<Event, "id">): Promise<Event> {
-  const { name, description, date, location, owner_email } = event;
+  const { name, description, date, location, owner } = event;
 
-  const query = `INSERT INTO events (name, description, date, location, owner_email) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
+  const query = `INSERT INTO events (name, description, date, location, owner) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
 
   const values = [
     name,
     description || null,
     date,
     location || null,
-    owner_email || null,
+    owner || null,
   ];
 
   const result = await pool.query(query, values);
