@@ -12,7 +12,7 @@ const port = process.env.PORT || 8080;
 
 app.use(
   cors({
-    origin: "https://events-nextjs-two.vercel.app/",
+    origin: "https://events-nextjs-two.vercel.app",
     credentials: true,
   })
 );
