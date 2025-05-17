@@ -12,14 +12,14 @@ const port = process.env.PORT || 8080;
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://events-nextjs-two.vercel.app/",
     credentials: true,
   })
 );
 
 app.use(express.json());
 app.use(logRequest);
-app.use(cookieParser()); 
+app.use(cookieParser());
 
 const baseRoute = express.Router();
 
