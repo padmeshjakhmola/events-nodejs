@@ -3,10 +3,11 @@ import * as EventController from "../controllers/eventsController.js";
 import * as AttendEvent from "../controllers/attendController.js";
 import * as AttendeesController from "../controllers/attendeesController.js";
 import * as CancleController from "../controllers/cancleController.js";
+import { authenticateToken } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
-router.get("/", EventController.getEvents);
+router.get("/", authenticateToken, EventController.getEvents);
 router.post("/create", EventController.createEvent);
 
 router.post("/:eventId/attend", AttendEvent.attendEvent);
