@@ -10,7 +10,19 @@ export interface Event {
 }
 
 export async function getAllEvents() {
-  const query = `SELECT * FROM events ORDER BY date ASC`;
+  const query = `
+    SELECT 
+      e.id,
+      e.name,
+      e.description,
+      e.date,
+      e.location,
+      e.owner,
+      u.fullname AS owner_name
+    FROM events e
+    LEFT JOIN users u ON e.owner = u.id
+    ORDER BY e.date ASC
+  `;
   const result = await pool.query(query);
 
   return result.rows;
@@ -58,7 +70,11 @@ export async function getEventAttendees(event_id: string) {
   return result.rows;
 }
 
-export async function cancelAttendance(event_id: string, user_id: string, reason: string) {
+export async function cancelAttendance(
+  event_id: string,
+  user_id: string,
+  reason: string
+) {
   const query = `
     UPDATE event_attendees
     SET is_cancelled = true, cancellation_reason = $3
