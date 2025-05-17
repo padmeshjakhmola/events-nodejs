@@ -13,5 +13,6 @@ router.post("/create", EventController.createEvent);
 router.post("/:eventId/attend", AttendEvent.attendEvent);
 router.get("/:eventId/attendees", AttendeesController.getAttendees);
 router.post("/:eventId/cancle", CancleController.cancelAttendee);
+router.delete("/:id", EventController.deleteEvent);
 
 export default router;

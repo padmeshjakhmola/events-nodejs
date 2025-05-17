@@ -53,3 +53,23 @@ export async function createEvent(req: Request, res: Response): Promise<any> {
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+export async function deleteEvent(req: Request, res: Response): Promise<any> {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ message: "event_id_required" });
+  }
+
+  try {
+    const deleted = await EventModel.deleteEvent(id);
+    if (!deleted) {
+      return res.status(404).json({ message: "event_not_found" });
+    }
+
+    res.status(200).json({ message: "event_deleted_successfully" });
+  } catch (error) {
+    console.error("error_deleting_event", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}

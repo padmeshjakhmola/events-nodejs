@@ -155,3 +155,10 @@ export async function cancelAttendance(
   const result = await pool.query(query, [event_id, user_id, reason]);
   return result.rows[0];
 }
+
+export async function deleteEvent(event_id: string): Promise<boolean> {
+  const query = `DELETE FROM events WHERE id = $1 RETURNING *`;
+  const result = await pool.query(query, [event_id]);
+
+  return (result.rowCount ?? 0) > 0;
+}
