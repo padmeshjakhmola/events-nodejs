@@ -17,7 +17,7 @@ export const getCurrentUser = (req: Request, res: Response): any => {
       fullName: string;
     };
 
-    res.status(200).json({ user: decoded });
+    return res.status(200).json({ user: decoded });
   } catch (err) {
     return res.status(403).json({ message: "invalid_or_expired_token" });
   }
