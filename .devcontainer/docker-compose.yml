@@ -1,0 +1,18 @@
+services:
+  server:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      target: development # for runnung in dev mode ex- npm run start:dev
+
+    volumes:
+      - ~/.ssh:/root/.ssh
+      - ..:/app # Mount the entire workspace
+
+    ports:
+      - "8080:8080" # Primary port for development
+      - "8080:8080" # Secondary port for production testing
+
+    environment:
+      - NODE_ENV=development
+      - PORT=8080 # Explicitly set port for development
