@@ -9,23 +9,94 @@ export interface Event {
   owner?: string;
 }
 
+// export async function getAllEvents() {
+//   const query = `
+//     SELECT
+//       e.id,
+//       e.name,
+//       e.description,
+//       e.date,
+//       e.location,
+//       e.owner,
+//       u.fullname AS owner_name
+//     FROM events e
+//     LEFT JOIN users u ON e.owner = u.id
+//     ORDER BY e.date ASC
+//   `;
+//   const result = await pool.query(query);
+
+//   return result.rows;
+// }
+
 export async function getAllEvents() {
   const query = `
     SELECT 
-      e.id,
+      e.id AS event_id,
       e.name,
       e.description,
       e.date,
       e.location,
       e.owner,
-      u.fullname AS owner_name
+      u.fullname AS owner_name,
+      
+      ea.user_id AS attendee_id,
+      ea.is_cancelled,
+      ea.cancellation_reason,
+
+      auser.fullname AS attendee_name,
+      auser.email AS attendee_email
     FROM events e
     LEFT JOIN users u ON e.owner = u.id
+    LEFT JOIN event_attendees ea ON e.id = ea.event_id
+    LEFT JOIN users auser ON ea.user_id = auser.id
     ORDER BY e.date ASC
   `;
+
   const result = await pool.query(query);
 
-  return result.rows;
+  const eventsMap = new Map();
+
+  for (const row of result.rows) {
+    const {
+      event_id,
+      name,
+      description,
+      date,
+      location,
+      owner,
+      owner_name,
+      attendee_id,
+      is_cancelled,
+      cancellation_reason,
+      attendee_name,
+      attendee_email,
+    } = row;
+
+    if (!eventsMap.has(event_id)) {
+      eventsMap.set(event_id, {
+        id: event_id,
+        name,
+        description,
+        date,
+        location,
+        owner,
+        owner_name,
+        attendees: [],
+      });
+    }
+
+    if (attendee_id) {
+      eventsMap.get(event_id).attendees.push({
+        id: attendee_id,
+        fullname: attendee_name,
+        email: attendee_email,
+        is_cancelled,
+        cancellation_reason,
+      });
+    }
+  }
+
+  return Array.from(eventsMap.values());
 }
 
 export async function createEvent(event: Omit<Event, "id">): Promise<Event> {
