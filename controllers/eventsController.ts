@@ -26,7 +26,7 @@ export async function createEvent(req: Request, res: Response): Promise<any> {
   try {
     const parsed = eventSchema.parse(req.body);
 
-    let ownerId: string | null = null;
+    let ownerId;
 
     if (parsed.owner_email) {
       const user = await UserModel.getUserByEmail(parsed.owner_email);

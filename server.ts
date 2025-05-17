@@ -3,6 +3,7 @@ import { logRequest } from "./middleware/logger.js";
 import healthRoute from "./routes/health.js";
 import eventRoute from "./routes/events.js";
 import userRoute from "./routes/users.js";
+import authRoute from "./routes/auth.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -25,6 +26,7 @@ const baseRoute = express.Router();
 baseRoute.use("/health", healthRoute);
 baseRoute.use("/events", eventRoute);
 baseRoute.use("/users", userRoute);
+baseRoute.use("/me", authRoute);
 
 app.use("/v1", baseRoute);
 
