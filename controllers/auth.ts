@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 export const getCurrentUser = (req: Request, res: Response): any => {
-  const token = req.cookies?.token;
+  const token = req.headers.token as string | undefined;
 
   if (!token) {
     return res.status(401).json({ message: "token_missing" });
